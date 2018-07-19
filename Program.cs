@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Speech.Synthesis;
 using System.Threading.Tasks;
@@ -18,8 +19,11 @@ namespace VSTSMonitor
     {
         static void Main(string[] args)
         {
-            if (Debugger.IsAttached)
-                AllocConsole();
+            #if DEBUG
+              var s = AllocConsole();
+            #endif
+
+            Console.WriteLine($"VSTSMonitor v{Assembly.GetExecutingAssembly().GetName().Version.ToString(3)}");
 
             if (args.FirstOrDefault() == "all") 
                 LastChecked = DateTime.MinValue;
@@ -31,6 +35,7 @@ namespace VSTSMonitor
 
         private static string Instance => ConfigurationManager.AppSettings["instance"];
         private static string Project => ConfigurationManager.AppSettings["project"];
+        private static string Repository => ConfigurationManager.AppSettings["repository"];
 
         private static DateTime LastChecked
         {
@@ -44,35 +49,75 @@ namespace VSTSMonitor
 
         static async Task ConnectAndMonitor()
         {
-            
+            var (authToken, userInfo) = await Authentication.GetAccessToken();
+            var client = VstsClient.Get(Instance, authToken);
+            Console.WriteLine($"Connecting to https://{Instance}.visualstudio.com/{Project} as {userInfo.DisplayableId}" );
             while (true)
             {
-                var client = VstsClient.Get(Instance, await Authentication.GetAccessToken());
-                await client.MonitorPullRequests(LastChecked);
+                try
+                {
+                    await client.MonitorPullRequests(LastChecked);
+                    LastChecked = DateTime.UtcNow;
 
-                LastChecked = DateTime.UtcNow;
-                
-                await Task.Delay(TimeSpan.FromSeconds(30));
+                    await Task.Delay(TimeSpan.FromSeconds(30));
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                }
             }
-            
-
-
         }
 
         public static async Task MonitorPullRequests(this VstsClient client, DateTime lastChecked)
         {
-            var newPullRequests = await client.GetPullRequestsAsync(Project, Project, new PullRequestQuery
-            {
-                CreatedAfter = lastChecked
-            });
+            var pullRequests = await client.GetPullRequestsAsync(Project, Repository, new PullRequestQuery());
 
-            Notify(newPullRequests);
+            var notifications = await FilterPullRequests(pullRequests, client);
+            
+            Notify(notifications);
 
          
         }
 
+        private static async Task<IEnumerable<PullRequestNotification>> FilterPullRequests(IEnumerable<PullRequest> pullRequests, VstsClient client)
+        {
+            List<PullRequestNotification> notifications = new List<PullRequestNotification>();
+            foreach (var pr in pullRequests)
+            {
+                if (pr.CreationDate >= LastChecked)
+                {
+                    notifications.Add( new PullRequestNotification
+                    {
+                        Title = pr.Title,
+                        CreatedBy = pr.CreatedBy.DisplayName,
+                        UpdatedOn = pr.CreationDate,
+                        NotificationType = "New"
+                    });
+
+                }
+                else
+                {
+                    var iterations = await client.GetPullRequestIterationsAsync(Project, Repository, pr.PullRequestId);
+                    var newest = iterations.OrderByDescending(iteration => iteration.CreatedDate).FirstOrDefault();
+                    if (newest?.CreatedDate >= LastChecked)
+                    {
+                        notifications.Add(new PullRequestNotification
+                        {
+                            Title = pr.Title,
+                            CreatedBy = newest.Author.DisplayName,
+                            UpdatedOn = newest.CreatedDate,
+                            NotificationType = "Updated"
+                        });
+                    }
+                }
+            }
+
+            return notifications;
+        }
+
         private static ToastNotifier _notifier = ToastNotificationManager.CreateToastNotifier("0");
         private static readonly SpeechSynthesizer _speechSynthesizer = new System.Speech.Synthesis.SpeechSynthesizer();
+        
 
         private const string NotificationTemplate = "<toast>"
                                                       + "<visual>"
@@ -83,14 +128,17 @@ namespace VSTSMonitor
                                                       + "</visual>"
                                                       + "</toast>";
 
-        private static void Notify(IEnumerable<PullRequest> prs)
+        private static void Notify(IEnumerable<PullRequestNotification> notifications)
         {
-            if (prs == null)
+            if (notifications == null)
                 return;
 
-            foreach (var pr in prs)
+            foreach (var pr in notifications)
             {
-                _speechSynthesizer.Speak($"New Pull Request By {pr.CreatedBy.DisplayName}: {pr.Title}");
+                if (VSTSMonitor.Default.TextToSpeech)
+                {
+                    _speechSynthesizer.Speak($"{pr.NotificationType} Pull Request By {pr.CreatedBy}: {pr.Title}");
+                }
             }
         }
 
@@ -106,5 +154,13 @@ namespace VSTSMonitor
         [DllImport("kernel32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         static extern bool AllocConsole();
+    }
+
+    internal class PullRequestNotification
+    {
+        public string Title {get; set; }
+        public string CreatedBy { get; set; }
+        public DateTime UpdatedOn { get; set; }
+        public string NotificationType { get; set; }
     }
 }

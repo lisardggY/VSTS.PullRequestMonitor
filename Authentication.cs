@@ -11,11 +11,11 @@ namespace VSTSMonitor
         internal const string clientId = "872cd9fa-d31f-45e0-9eab-6e460a02d1f1";          //change to your app registration's Application ID, unless you are an MSA backed account
         internal const string replyUri = "urn:ietf:wg:oauth:2.0:oob";         
 
-        public static async Task<string> GetAccessToken()
+        public static async Task<(string, UserInfo)> GetAccessToken()
         {
             AuthenticationContext ctx = GetAuthenticationContext(null);
             var result = await ctx.AcquireTokenAsync(VSTSResourceId, clientId, new Uri(replyUri), new PlatformParameters(PromptBehavior.Auto));
-            return result.AccessToken;
+            return (result.AccessToken, result.UserInfo);
         }
 
         private static AuthenticationContext GetAuthenticationContext(string tenant)
