@@ -1,12 +1,9 @@
 ﻿<?xml version='1.0' encoding='utf-8'?>
-<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="VSTSMonitor" GeneratedClassName="VSTSMonitor">
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="VSTSMonitor" GeneratedClassName="PullRequestMonitor">
   <Profiles />
   <Settings>
     <Setting Name="LastChecked" Type="System.DateTime" Scope="User">
       <Value Profile="(Default)">1601-01-01</Value>
-    </Setting>
-    <Setting Name="ShowPopup" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="TextToSpeech" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>

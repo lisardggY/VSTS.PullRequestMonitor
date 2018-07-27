@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 
-namespace VSTSMonitor
+namespace PullRequestMonitor
 {
     internal class Authentication
     {

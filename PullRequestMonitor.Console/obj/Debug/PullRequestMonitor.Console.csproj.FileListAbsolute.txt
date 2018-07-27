@@ -1,0 +1,2 @@
+C:\projects\PullRequestMonitor\PullRequestMonitor.Console\obj\Debug\PullRequestMonitor.Console.csprojAssemblyReference.cache
+C:\projects\PullRequestMonitor\PullRequestMonitor.Console\obj\Debug\PullRequestMonitor.Console.csproj.CoreCompileInputs.cache

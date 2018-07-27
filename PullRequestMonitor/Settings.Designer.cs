@@ -8,16 +8,16 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace VSTSMonitor {
+namespace PullRequestMonitor {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "15.7.0.0")]
-    internal sealed partial class VSTSMonitor : global::System.Configuration.ApplicationSettingsBase {
+    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
-        private static VSTSMonitor defaultInstance = ((VSTSMonitor)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new VSTSMonitor())));
+        private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
         
-        public static VSTSMonitor Default {
+        public static Settings Default {
             get {
                 return defaultInstance;
             }
@@ -32,18 +32,6 @@ namespace VSTSMonitor {
             }
             set {
                 this["LastChecked"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool ShowPopup {
-            get {
-                return ((bool)(this["ShowPopup"]));
-            }
-            set {
-                this["ShowPopup"] = value;
             }
         }
         
