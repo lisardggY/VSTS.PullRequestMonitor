@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PullRequestMonitor", "PullR
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PullRequestMonitor.Console", "PullRequestMonitor.Console\PullRequestMonitor.Console.csproj", "{964EC6AE-0042-4352-B46E-A400C3CB314A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PullRequestMonitor.Android", "PullRequestMonitor.Android\PullRequestMonitor.Android.csproj", "{688B309D-7F23-43D4-A84E-727FD1A41312}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,12 @@ Global
 		{964EC6AE-0042-4352-B46E-A400C3CB314A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{964EC6AE-0042-4352-B46E-A400C3CB314A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{964EC6AE-0042-4352-B46E-A400C3CB314A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{688B309D-7F23-43D4-A84E-727FD1A41312}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{688B309D-7F23-43D4-A84E-727FD1A41312}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{688B309D-7F23-43D4-A84E-727FD1A41312}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{688B309D-7F23-43D4-A84E-727FD1A41312}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{688B309D-7F23-43D4-A84E-727FD1A41312}.Release|Any CPU.Build.0 = Release|Any CPU
+		{688B309D-7F23-43D4-A84E-727FD1A41312}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

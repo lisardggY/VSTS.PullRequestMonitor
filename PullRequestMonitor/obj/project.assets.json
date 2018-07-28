@@ -30,6 +30,45 @@
         "runtime": {
           "lib/net45/Newtonsoft.Json.dll": {}
         }
+      },
+      "System.Reactive/4.0.0": {
+        "type": "package",
+        "frameworkAssemblies": [
+          "System.Windows",
+          "System.Windows.Forms",
+          "WindowsBase"
+        ],
+        "compile": {
+          "lib/net46/System.Reactive.dll": {}
+        },
+        "runtime": {
+          "lib/net46/System.Reactive.dll": {}
+        }
+      },
+      "System.Reactive.Linq/4.0.0": {
+        "type": "package",
+        "dependencies": {
+          "System.Reactive": "4.0.0"
+        },
+        "compile": {
+          "lib/net46/System.Reactive.Linq.dll": {}
+        },
+        "runtime": {
+          "lib/net46/System.Reactive.Linq.dll": {}
+        }
+      },
+      "VSTS.Net/0.2.1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.Logging.Abstractions": "2.0.0",
+          "Newtonsoft.Json": "11.0.2"
+        },
+        "compile": {
+          "lib/netstandard2.0/VSTS.Net.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/VSTS.Net.dll": {}
+        }
       }
     }
   },
@@ -110,13 +149,62 @@
         "newtonsoft.json.11.0.2.nupkg.sha512",
         "newtonsoft.json.nuspec"
       ]
+    },
+    "System.Reactive/4.0.0": {
+      "sha512": "vv4/fY+iZbMa1fK2mnf5abqbhDUdW0NS5ryMU7sBqZqFWL65DpWHm3GWRYLa5v9WJQRruw1dI99GQWPu4L6sSg==",
+      "type": "package",
+      "path": "system.reactive/4.0.0",
+      "files": [
+        ".signature.p7s",
+        "lib/net46/System.Reactive.dll",
+        "lib/net46/System.Reactive.xml",
+        "lib/netstandard2.0/System.Reactive.dll",
+        "lib/netstandard2.0/System.Reactive.xml",
+        "lib/uap10.0.16299/System.Reactive.dll",
+        "lib/uap10.0.16299/System.Reactive.pri",
+        "lib/uap10.0.16299/System.Reactive.xml",
+        "lib/uap10.0/System.Reactive.dll",
+        "lib/uap10.0/System.Reactive.pri",
+        "lib/uap10.0/System.Reactive.xml",
+        "system.reactive.4.0.0.nupkg.sha512",
+        "system.reactive.nuspec"
+      ]
+    },
+    "System.Reactive.Linq/4.0.0": {
+      "sha512": "mCRZLWTC56Ya5CvaeE28pH54LqlS4fN2vkJt2T16Tr+6H4BTFo5+B/UOvz5f3jlOVyCuC6PRvsBjp2IY5b8zAw==",
+      "type": "package",
+      "path": "system.reactive.linq/4.0.0",
+      "files": [
+        ".signature.p7s",
+        "lib/net46/System.Reactive.Linq.dll",
+        "lib/net46/System.Reactive.Linq.xml",
+        "lib/netstandard2.0/System.Reactive.Linq.dll",
+        "lib/netstandard2.0/System.Reactive.Linq.xml",
+        "lib/uap10.0/System.Reactive.Linq.dll",
+        "lib/uap10.0/System.Reactive.Linq.pri",
+        "lib/uap10.0/System.Reactive.Linq.xml",
+        "system.reactive.linq.4.0.0.nupkg.sha512",
+        "system.reactive.linq.nuspec"
+      ]
+    },
+    "VSTS.Net/0.2.1": {
+      "sha512": "MHpTrXtolACArTKAnqqGIG9mefVAeJbNL9uxO9b4ZC7/APt175w2hY0s1d0eA82ONsyoBw8wt0kAClPqb3NbIA==",
+      "type": "package",
+      "path": "vsts.net/0.2.1",
+      "files": [
+        "lib/netstandard2.0/VSTS.Net.dll",
+        "vsts.net.0.2.1.nupkg.sha512",
+        "vsts.net.nuspec"
+      ]
     }
   },
   "projectFileDependencyGroups": {
     ".NETFramework,Version=v4.7.1": [
       "Microsoft.Extensions.Logging.Abstractions >= 2.0.0",
       "Microsoft.IdentityModel.Clients.ActiveDirectory >= 3.19.8",
-      "Newtonsoft.Json >= 11.0.2"
+      "Newtonsoft.Json >= 11.0.2",
+      "System.Reactive.Linq >= 4.0.0",
+      "VSTS.Net >= 0.2.1"
     ]
   },
   "packageFolders": {
@@ -173,6 +261,14 @@
           "Newtonsoft.Json": {
             "target": "Package",
             "version": "[11.0.2, )"
+          },
+          "System.Reactive.Linq": {
+            "target": "Package",
+            "version": "[4.0.0, )"
+          },
+          "VSTS.Net": {
+            "target": "Package",
+            "version": "[0.2.1, )"
           }
         }
       }

@@ -1,2 +1,14 @@
 C:\projects\PullRequestMonitor\PullRequestMonitor.Console\obj\Debug\PullRequestMonitor.Console.csprojAssemblyReference.cache
 C:\projects\PullRequestMonitor\PullRequestMonitor.Console\obj\Debug\PullRequestMonitor.Console.csproj.CoreCompileInputs.cache
+C:\projects\PullRequestMonitor\PullRequestMonitor.Console\bin\Debug\PullRequestMonitor.Console.exe.config
+C:\projects\PullRequestMonitor\PullRequestMonitor.Console\bin\Debug\PullRequestMonitor.Console.exe
+C:\projects\PullRequestMonitor\PullRequestMonitor.Console\bin\Debug\PullRequestMonitor.Console.pdb
+C:\projects\PullRequestMonitor\PullRequestMonitor.Console\bin\Debug\PullRequestMonitor.dll
+C:\projects\PullRequestMonitor\PullRequestMonitor.Console\bin\Debug\Microsoft.IdentityModel.Clients.ActiveDirectory.dll
+C:\projects\PullRequestMonitor\PullRequestMonitor.Console\bin\Debug\VSTS.Net.dll
+C:\projects\PullRequestMonitor\PullRequestMonitor.Console\bin\Debug\Microsoft.Extensions.Logging.Abstractions.dll
+C:\projects\PullRequestMonitor\PullRequestMonitor.Console\bin\Debug\Newtonsoft.Json.dll
+C:\projects\PullRequestMonitor\PullRequestMonitor.Console\bin\Debug\PullRequestMonitor.pdb
+C:\projects\PullRequestMonitor\PullRequestMonitor.Console\obj\Debug\PullRequestMonitor.Console.csproj.CopyComplete
+C:\projects\PullRequestMonitor\PullRequestMonitor.Console\obj\Debug\PullRequestMonitor.Console.exe
+C:\projects\PullRequestMonitor\PullRequestMonitor.Console\obj\Debug\PullRequestMonitor.Console.pdb
