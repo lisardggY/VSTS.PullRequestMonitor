@@ -15,5 +15,5 @@ This is the main client app for the `Monitor` class - a console app (running wit
 (Not implemented yet)
 A Xamarin.Android project to act as an Android client for the `Monitor` class. Will implement a new INotifier - `AndroidNotificationNotifier` - which will notify of new PRs in Android's notification center.
 
-### Contributing
+## Contributing
 Feel free to fork the project, create a new branch, add features/fix bugs, and create a Pull Request back to my project if you want to push them upstream.
