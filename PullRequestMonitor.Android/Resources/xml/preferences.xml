@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+  <PreferenceCategory
+    android:title="@string/pref_connection_settings_title"
+    android:key="pref_connection_settings">
+    <EditTextPreference android:key="pref_instance"
+                        android:title="@string/pref_instance_label"/>
+    <EditTextPreference android:key="pref_project"
+                        android:title="@string/pref_project_label"/>
+    <EditTextPreference android:key="pref_repository"
+                        android:title="@string/pref_repository_label"/>
+  </PreferenceCategory>
+  <PreferenceCategory android:key="pref_notifiers" android:title="@string/pref_notifiers_title">
+<SwitchPreference android:key="pref_notifier_notification"
+                  android:title="@string/pref_notifier_notification_label"/>
+    <SwitchPreference android:key="pref_notifier_speech"
+                      android:title="@string/pref_notifier_speech_label"/>
+
+  </PreferenceCategory>
+</PreferenceScreen>
