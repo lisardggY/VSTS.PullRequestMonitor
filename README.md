@@ -11,8 +11,9 @@ The project is currently divided into several parts:
 * This project also contains the definition for the INotifier interface, and several default notifiers - Write To Console and Text to Speech. It can be extended with new notifiers in client apps. (See below)
 ### PullRequestMonitor.Console
 This is the main client app for the `Monitor` class - a console app (running without a console window in Release builds) that uses the `Monitor` class and handles new notifications using the ConsoleNotifier and TextToSpeechNotifiers. Can be modified to add more notifiers.
-### PullRequestMonitor.Androi
+### PullRequestMonitor.Android
 (Not implemented yet)
+
 A Xamarin.Android project to act as an Android client for the `Monitor` class. Will implement a new INotifier - `AndroidNotificationNotifier` - which will notify of new PRs in Android's notification center.
 
 ## Contributing
