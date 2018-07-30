@@ -6,7 +6,9 @@ using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
 using PullRequestMonitor.Extensions;
+using PullRequestMonitor.Model;
 using VSTS.Net;
+using VSTS.Net.Models.Identity;
 using VSTS.Net.Models.PullRequests;
 using VSTS.Net.Models.Request;
 
@@ -14,13 +16,13 @@ namespace PullRequestMonitor
 {
     public class Monitor
     {
-        private readonly ConnectionSettings _configuration;
+        private readonly MonitorSettings _configuration;
         private readonly Subject<PullRequestNotification> _notifier;
         private CancellationTokenSource _cts;
 
-        public Monitor(ConnectionSettings connectionSettings)
+        public Monitor(MonitorSettings monitorSettings)
         {
-            _configuration = connectionSettings;
+            _configuration = monitorSettings;
             _notifier = new Subject<PullRequestNotification>();
             OnNotification = _notifier.AsObservable();
         }
@@ -90,7 +92,7 @@ namespace PullRequestMonitor
                         NotificationType = NotificationTypes.New,
                         PullRequestId = pr.PullRequestId,
                         Title = pr.Title,
-                        CreatedBy = pr.CreatedBy.DisplayName,
+                        CreatedBy = GetName(pr.CreatedBy),
                         UpdatedOn = pr.CreationDate
                     });
 
@@ -98,7 +100,7 @@ namespace PullRequestMonitor
                 GetUpdatedPullRequests(client, allOpenPullRequests.Except(newPullRequests), cancellationToken);
             return newPullRequestNotifications.Concat(updatedPullRequestNotifications);
         }
-
+        
         private async Task<IEnumerable<PullRequestNotification>> GetUpdatedPullRequests(VstsClient client,
             IEnumerable<PullRequest> pullRequests,
             CancellationToken cancellationToken)
@@ -116,8 +118,8 @@ namespace PullRequestMonitor
                 return new PullRequestNotification
                 {
                     Title = pr.Title,
-                    CreatedBy = pr.CreatedBy.DisplayName,
-                    ChangedBy = push.Author.DisplayName,
+                    CreatedBy = GetName(pr.CreatedBy),
+                    ChangedBy = GetName(push.Author),
                     UpdatedOn = push.CreatedDate,
                     NotificationType = NotificationTypes.Updated
                 };
@@ -138,8 +140,8 @@ namespace PullRequestMonitor
             return closedPullRequests.Select(pr => new PullRequestNotification
             {
                 PullRequestId = pr.PullRequestId,
-                CreatedBy = pr.CreatedBy.DisplayName,
-                ChangedBy = pr.Reviewers.FirstOrDefault()?.DisplayName,
+                CreatedBy = GetName(pr.CreatedBy),
+                ChangedBy = GetName(pr.Reviewers.FirstOrDefault()),
                 UpdatedOn = pr.ClosedDate.GetValueOrDefault(),
                 Title = pr.Title,
                 NotificationType = NotificationTypes.Approved
@@ -154,6 +156,26 @@ namespace PullRequestMonitor
                 _configuration.Repository,
                 prId, cancellationToken);
             return pushes.OrderByDescending(iteration => iteration.CreatedDate).First();
+        }
+
+        private string GetName(IdentityReference identity)
+        {
+            switch (_configuration.UserNameFormat)
+            {
+                case UserNameFormat.DisplayName:
+                    return identity?.DisplayName;
+                case UserNameFormat.FirstName:
+                    return identity?.DisplayName?.Split(' ')?.FirstOrDefault();
+                case UserNameFormat.EmailAddress:
+                    return identity?.UniqueName;
+                case UserNameFormat.EmailAlias:
+                    return identity?.UniqueName?.Split('@')?[0];
+                case UserNameFormat.Custom:
+                    return _configuration.CustomUserNameFormat?.Invoke(identity);
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+            
         }
 
     }
