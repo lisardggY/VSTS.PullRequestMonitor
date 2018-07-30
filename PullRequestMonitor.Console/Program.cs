@@ -3,6 +3,7 @@ using System.Configuration;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using PullRequestMonitor.Model;
 
 namespace PullRequestMonitor.Console
 {
@@ -16,20 +17,36 @@ namespace PullRequestMonitor.Console
               AllocConsole();
             #endif
 
+            
             System.Console.WriteLine($"VSTSMonitor v{Assembly.GetExecutingAssembly().GetName().Version.ToString(3)}");
 
             _notifiers = InitializeNotifiers();
 
-            var settings = new ConnectionSettings
+            var settings = new MonitorSettings
             {
                 Instance = ConfigurationManager.AppSettings["instance"],
                 Project = ConfigurationManager.AppSettings["project"],
                 Repository = ConfigurationManager.AppSettings["repository"],
                 PollingInterval =
-                    TimeSpan.FromSeconds(int.Parse(ConfigurationManager.AppSettings["pollingIntervalSec"] ?? "30"))};
+                    TimeSpan.FromSeconds(int.Parse(ConfigurationManager.AppSettings["pollingIntervalSec"] ?? "30")),
+                UserNameFormat = UserNameFormat.Custom,
+                CustomUserNameFormat = identity => identity.DisplayName.Split('(')[0].TrimEnd()
+
+            };
+
             var monitor = new Monitor(settings);
             monitor.OnNotification.Subscribe(Notify);
+            HandleConsoleInterrupt(() => monitor.StopMonitoring());
             await monitor.StartMonitoring();
+        }
+
+        private static void HandleConsoleInterrupt(Action onSignalReceived)
+        {
+            SetConsoleCtrlHandler(sig =>
+            {
+                onSignalReceived();
+                return true;
+            }, true);
         }
 
         private static IPullRequestNotifier[] InitializeNotifiers()
@@ -53,5 +70,9 @@ namespace PullRequestMonitor.Console
         [DllImport("kernel32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         static extern bool AllocConsole();
+        [DllImport("Kernel32")]
+        private static extern bool SetConsoleCtrlHandler(ConsoleCtrlHandlerDelegate handler, bool add);
+        private delegate bool ConsoleCtrlHandlerDelegate(int sig);
+
     }
 }
