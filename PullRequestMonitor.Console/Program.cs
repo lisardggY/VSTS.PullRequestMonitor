@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Configuration;
+using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
@@ -17,6 +18,7 @@ namespace PullRequestMonitor.Console
               AllocConsole();
             #endif
 
+            Debugger.Break();
             
             System.Console.WriteLine($"VSTSMonitor v{Assembly.GetExecutingAssembly().GetName().Version.ToString(3)}");
 
@@ -29,8 +31,7 @@ namespace PullRequestMonitor.Console
                 Repository = ConfigurationManager.AppSettings["repository"],
                 PollingInterval =
                     TimeSpan.FromSeconds(int.Parse(ConfigurationManager.AppSettings["pollingIntervalSec"] ?? "30")),
-                UserNameFormat = UserNameFormat.Custom,
-                CustomUserNameFormat = identity => identity.DisplayName.Split('(')[0].TrimEnd()
+                UserNameFormat = UserNameFormat.FirstName,
 
             };
 
