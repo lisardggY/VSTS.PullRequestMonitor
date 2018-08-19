@@ -12,15 +12,13 @@ namespace PullRequestMonitor.Console
     {
         private static IPullRequestNotifier[] _notifiers;
 
-        private static async Task Main(string[] args)
+        private static async Task Main()
         {
             #if DEBUG
               AllocConsole();
             #endif
 
-            Debugger.Break();
-            
-            System.Console.WriteLine($"VSTSMonitor v{Assembly.GetExecutingAssembly().GetName().Version.ToString(3)}");
+             System.Console.WriteLine($"VSTSMonitor v{Assembly.GetExecutingAssembly().GetName().Version.ToString(3)}");
 
             _notifiers = InitializeNotifiers();
 
@@ -37,6 +35,7 @@ namespace PullRequestMonitor.Console
 
             var monitor = new Monitor(settings);
             monitor.OnNotification.Subscribe(Notify);
+            monitor.OnError.Subscribe(OnError);
             HandleConsoleInterrupt(() => monitor.StopMonitoring());
             await monitor.StartMonitoring();
         }
@@ -65,6 +64,11 @@ namespace PullRequestMonitor.Console
             {
                 notifier.Notify(notification);
             }
+        }
+
+        private static void OnError(Exception exception)
+        {
+            System.Console.Error.WriteLine(exception.Message);
         }
 
 
