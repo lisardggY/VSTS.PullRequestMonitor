@@ -18,13 +18,14 @@ namespace PullRequestMonitor
     {
         private readonly MonitorSettings _configuration;
         private readonly Subject<PullRequestNotification> _notifier;
+        private readonly Subject<Exception> _errorNotifier;
         private CancellationTokenSource _cts;
 
         public Monitor(MonitorSettings monitorSettings)
         {
             _configuration = monitorSettings;
             _notifier = new Subject<PullRequestNotification>();
-            OnNotification = _notifier.AsObservable();
+            _errorNotifier = new Subject<Exception>();
         }
 
         private DateTime LastChecked
@@ -37,7 +38,8 @@ namespace PullRequestMonitor
             }
         }
 
-        public IObservable<PullRequestNotification> OnNotification { get; }
+        public IObservable<PullRequestNotification> OnNotification => _notifier.AsObservable();
+        public IObservable<Exception> OnError => _errorNotifier.AsObservable();
 
         public async Task StartMonitoring()
         {
@@ -60,7 +62,7 @@ namespace PullRequestMonitor
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message);
+                    _errorNotifier.OnNext(ex);
                 }
             }
         }
@@ -165,11 +167,11 @@ namespace PullRequestMonitor
                 case UserNameFormat.DisplayName:
                     return identity?.DisplayName;
                 case UserNameFormat.FirstName:
-                    return identity?.DisplayName?.Split(' ')?.FirstOrDefault();
+                    return identity?.DisplayName?.Split(' ').FirstOrDefault();
                 case UserNameFormat.EmailAddress:
                     return identity?.UniqueName;
                 case UserNameFormat.EmailAlias:
-                    return identity?.UniqueName?.Split('@')?[0];
+                    return identity?.UniqueName?.Split('@')[0];
                 case UserNameFormat.Custom:
                     return _configuration.CustomUserNameFormat?.Invoke(identity);
                 default:
