@@ -1,12 +1,17 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
-namespace PullRequestMonitor
+namespace PullRequestMonitor.Notifiers
 {
     public class ConsoleNotifier : IPullRequestNotifier
     {
         public Task Notify(PullRequestNotification notification)
         {
-            System.Console.WriteLine(notification.ToString());
+            ConsoleColor color = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.Write($"[{DateTime.Now:T}] ");
+            Console.ForegroundColor = color;
+            Console.WriteLine(notification);
             return Task.CompletedTask;
         }
     }

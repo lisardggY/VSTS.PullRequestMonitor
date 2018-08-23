@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using PullRequestMonitor.Model;
+using PullRequestMonitor.Notifiers;
 
 namespace PullRequestMonitor.Console
 {
@@ -18,7 +19,7 @@ namespace PullRequestMonitor.Console
               AllocConsole();
             #endif
 
-             System.Console.WriteLine($"VSTSMonitor v{Assembly.GetExecutingAssembly().GetName().Version.ToString(3)}");
+             System.Console.WriteLine($"PullRequestMonitor.Console v{Assembly.GetExecutingAssembly().GetName().Version.ToString(3)}");
 
             _notifiers = InitializeNotifiers();
 
