@@ -9,7 +9,7 @@ namespace PullRequestMonitor.Notifiers
         {
             ConsoleColor color = Console.ForegroundColor;
             Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.Write($"[{DateTime.Now:T}] ");
+            Console.Write($"[{notification.UpdatedOn:G}] ");
             Console.ForegroundColor = color;
             Console.WriteLine(notification);
             return Task.CompletedTask;
