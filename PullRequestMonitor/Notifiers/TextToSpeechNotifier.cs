@@ -1,7 +1,7 @@
 ﻿using System.Speech.Synthesis;
 using System.Threading.Tasks;
 
-namespace PullRequestMonitor
+namespace PullRequestMonitor.Notifiers
 {
     public class TextToSpeechNotifier : IPullRequestNotifier
     {

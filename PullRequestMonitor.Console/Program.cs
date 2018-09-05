@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
-using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using PullRequestMonitor.Model;
+using PullRequestMonitor.Notifiers;
 
 namespace PullRequestMonitor.Console
 {
@@ -18,7 +19,7 @@ namespace PullRequestMonitor.Console
               AllocConsole();
             #endif
 
-             System.Console.WriteLine($"VSTSMonitor v{Assembly.GetExecutingAssembly().GetName().Version.ToString(3)}");
+             System.Console.WriteLine($"PullRequestMonitor.Console v{Assembly.GetExecutingAssembly().GetName().Version.ToString(3)}");
 
             _notifiers = InitializeNotifiers();
 
@@ -26,17 +27,17 @@ namespace PullRequestMonitor.Console
             {
                 Instance = ConfigurationManager.AppSettings["instance"],
                 Project = ConfigurationManager.AppSettings["project"],
-                Repository = ConfigurationManager.AppSettings["repository"],
+                Repositories = ConfigurationManager.AppSettings["repository"].Split(';'),
                 PollingInterval =
                     TimeSpan.FromSeconds(int.Parse(ConfigurationManager.AppSettings["pollingIntervalSec"] ?? "30")),
                 UserNameFormat = UserNameFormat.FirstName,
-
+                IgnoredReviewers = new HashSet<string>(ConfigurationManager.AppSettings["ignoredReviewers"].Split(';'))
             };
 
             var monitor = new Monitor(settings);
             monitor.OnNotification.Subscribe(Notify);
             monitor.OnError.Subscribe(OnError);
-            HandleConsoleInterrupt(() => monitor.StopMonitoring());
+            //HandleConsoleInterrupt(() => monitor.StopMonitoring());
             await monitor.StartMonitoring();
         }
 

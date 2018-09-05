@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Threading.Tasks;
 
-namespace PullRequestMonitor
+namespace PullRequestMonitor.Notifiers
 {
     public class DebugNotifier : IPullRequestNotifier
     {

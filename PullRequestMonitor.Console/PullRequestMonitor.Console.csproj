@@ -36,6 +36,9 @@
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="PullRequestMonitor.Console.csproj.DotSettings" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\PullRequestMonitor\PullRequestMonitor.csproj" />
   </ItemGroup>
   <ItemGroup>

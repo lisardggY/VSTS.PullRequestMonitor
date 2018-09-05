@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace PullRequestMonitor
+namespace PullRequestMonitor.Notifiers
 {
     public interface IPullRequestNotifier
     {

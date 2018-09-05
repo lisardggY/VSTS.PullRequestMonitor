@@ -8,6 +8,7 @@ namespace PullRequestMonitor
         public string Title {get; set; }
         public string CreatedBy { get; set; }
         public string ChangedBy { get; set; }
+        public string Repository { get; set; }
         public DateTime UpdatedOn { get; set; }
         public string NotificationType { get; set; }
 
@@ -16,9 +17,9 @@ namespace PullRequestMonitor
             switch (NotificationType)
             {
                 case NotificationTypes.Approved:
-                    return $"{ChangedBy} approved {CreatedBy}'s Pull Request {Title}";
+                    return $"{ChangedBy} approved {CreatedBy}'s Pull Request {Title} on {Repository}";
                 default:
-                    return $"{NotificationType} Pull Request By {CreatedBy}: {Title}";
+                    return $"{NotificationType} Pull Request On {Repository} By {CreatedBy}: {Title}";
 
             }
 

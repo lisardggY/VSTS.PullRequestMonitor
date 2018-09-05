@@ -11,6 +11,7 @@ using VSTS.Net;
 using VSTS.Net.Models.Identity;
 using VSTS.Net.Models.PullRequests;
 using VSTS.Net.Models.Request;
+using VSTS.Net.Types;
 
 namespace PullRequestMonitor
 {
@@ -54,7 +55,7 @@ namespace PullRequestMonitor
                 try
                 {
                     var (authToken, _) = await Authentication.GetAccessToken();
-                    var client = VstsClient.Get(_configuration.Instance, authToken);
+                    var client = VstsClient.Get(new OnlineUrlBuilderFactory(_configuration.Instance), authToken);
                     await MonitorPullRequests(client, LastChecked, cancellationToken);
                     LastChecked = DateTime.UtcNow;
 
@@ -75,22 +76,26 @@ namespace PullRequestMonitor
         public async Task MonitorPullRequests(VstsClient client, DateTime lastChecked,
             CancellationToken cancellationToken)
         {
+            foreach (var repository in _configuration.Repositories)
+            {
             var allOpenPullRequests = (await client.GetPullRequestsAsync(_configuration.Project,
-                _configuration.Repository, new PullRequestQuery(), cancellationToken)).ToArray();
-            var newAndUpdated = await GetNewAndUpdatedPullRequests(client, allOpenPullRequests, cancellationToken);
-            var closedPullRequests = await GetClosedPullRequests(client, cancellationToken);
+                repository, new PullRequestQuery(), cancellationToken)).ToArray();
+            var newAndUpdated = await GetNewAndUpdatedPullRequests(client, repository, allOpenPullRequests, cancellationToken);
+            var closedPullRequests = await GetClosedPullRequests(client, repository, cancellationToken);
             
             foreach (var notification in newAndUpdated.Concat(closedPullRequests))
                 _notifier.OnNext(notification);
+            }
         }
 
-        private async Task<IEnumerable<PullRequestNotification>> GetNewAndUpdatedPullRequests(VstsClient client, PullRequest[] allOpenPullRequests, CancellationToken cancellationToken)
+        private async Task<IEnumerable<PullRequestNotification>> GetNewAndUpdatedPullRequests(VstsClient client, string repository, PullRequest[] allOpenPullRequests, CancellationToken cancellationToken)
         {
             var newPullRequests = allOpenPullRequests.Where(pr => pr.CreationDate >= LastChecked).ToArray();
             var newPullRequestNotifications = newPullRequests
                 .Select(pr =>
                     new PullRequestNotification
                     {
+                        Repository = repository,
                         NotificationType = NotificationTypes.New,
                         PullRequestId = pr.PullRequestId,
                         Title = pr.Title,
@@ -99,16 +104,17 @@ namespace PullRequestMonitor
                     });
 
             var updatedPullRequestNotifications = await
-                GetUpdatedPullRequests(client, allOpenPullRequests.Except(newPullRequests), cancellationToken);
+                GetUpdatedPullRequests(client, repository, allOpenPullRequests.Except(newPullRequests), cancellationToken);
             return newPullRequestNotifications.Concat(updatedPullRequestNotifications);
         }
         
         private async Task<IEnumerable<PullRequestNotification>> GetUpdatedPullRequests(VstsClient client,
+            string repository,
             IEnumerable<PullRequest> pullRequests,
             CancellationToken cancellationToken)
         {
             var prsAndPushes = await pullRequests
-                                     .Select(async pr => (pr, await GetLatestIteration(client, pr.PullRequestId, cancellationToken)))
+                                     .Select(async pr => (pr, await GetLatestIteration(client, repository, pr.PullRequestId, cancellationToken)))
                                      .WhenAll();
             return prsAndPushes
                    .Where (data => data.Item2.CreatedDate >= LastChecked)
@@ -119,6 +125,7 @@ namespace PullRequestMonitor
             {
                 return new PullRequestNotification
                 {
+                    Repository = repository,
                     Title = pr.Title,
                     CreatedBy = GetName(pr.CreatedBy),
                     ChangedBy = GetName(push.Author),
@@ -128,10 +135,10 @@ namespace PullRequestMonitor
             }
         }
 
-        private async Task<IEnumerable<PullRequestNotification>> GetClosedPullRequests(VstsClient client, CancellationToken cancellationToken)
+        private async Task<IEnumerable<PullRequestNotification>> GetClosedPullRequests(VstsClient client, string repository, CancellationToken cancellationToken)
         {
             var closedPullRequests = await client.GetPullRequestsAsync(_configuration.Project,
-                _configuration.Repository,
+                repository,
                 new PullRequestQuery()
                 {
                     Status = "completed",
@@ -141,21 +148,38 @@ namespace PullRequestMonitor
 
             return closedPullRequests.Select(pr => new PullRequestNotification
             {
+                Repository = repository,
                 PullRequestId = pr.PullRequestId,
                 CreatedBy = GetName(pr.CreatedBy),
-                ChangedBy = GetName(pr.Reviewers.FirstOrDefault()),
+                ChangedBy = GetApprovers(pr.Reviewers),
                 UpdatedOn = pr.ClosedDate.GetValueOrDefault(),
                 Title = pr.Title,
                 NotificationType = NotificationTypes.Approved
             });
         }
 
+        private string GetApprovers(IEnumerable<IdentityReferenceWithVote> reviewers)
+        {
+            var realReviewers = reviewers.Where(reviewer => !reviewer.IsContainer).ToArray();
+            if (realReviewers.Length == 1)
+                return GetName(realReviewers.First());
+            else
+                return string.Join(" and ", realReviewers.Where(reviewer =>
+                    !_configuration.IgnoredReviewers.Overlaps(new[]
+                    {
+                        reviewer.Name,
+                        reviewer.DisplayName,
+                        reviewer.UniqueName,
+                        reviewer.Id.ToString()
+                    })).Select(GetName));
+        }
 
-        private async Task<PullRequestIteration> GetLatestIteration(VstsClient client, int prId,
+
+        private async Task<PullRequestIteration> GetLatestIteration(VstsClient client, string repository, int prId,
             CancellationToken cancellationToken)
         {
             var pushes = await client.GetPullRequestIterationsAsync(_configuration.Project, 
-                _configuration.Repository,
+                repository,
                 prId, cancellationToken);
             return pushes.OrderByDescending(iteration => iteration.CreatedDate).First();
         }
